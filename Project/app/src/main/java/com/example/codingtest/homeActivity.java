@@ -3,7 +3,9 @@ package com.example.codingtest;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.datatransport.Event;
@@ -19,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -55,7 +59,7 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
             finish();
             startActivity(new Intent(getApplicationContext(), homeActivity.class));
         }*/
-
+        db = FirebaseFirestore.getInstance();
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         buttonSignIn = (Button) findViewById(R.id.buttonSignin);
         buttonShowProducts = (Button) findViewById(R.id.buttonShowProducts);
@@ -68,8 +72,7 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-    public void AddProduct(){
+    public void AddProduct() {
 //        Toast.makeText(homeActivity.this,"lkk.ufyjdthjrysError",Toast.LENGTH_LONG).show();
         Map<String, Object> city = new HashMap<>();
         city.put("name", editTextPassword.getText());
@@ -90,7 +93,7 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    public void ShowProducts(){
+    public void ShowProducts() {
 
 //        DocumentReference docRef = db.collection("Products").document('weQNS0BmyqoUwpVfji9r');
 //        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -111,18 +114,35 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
 
         db.collection("Products")
-                .whereEqualTo("Value", true)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             List<Event> eventList = new ArrayList<>();
-
-                            for(DocumentSnapshot doc : task.getResult()){
-                                Log.d(TAG, "DocumentSnapshot data: ");
+                            StringBuilder myB = new StringBuilder();
+                            for (DocumentSnapshot doc : task.getResult()) {
+                                for (String s : doc.getData().keySet()) {
+                                    Log.d(TAG, "" + myB.append(doc.get(s) + "\n"));
+                                }
                             }
-                            //do something with list of pojos retrieved
+
+                            new AlertDialog.Builder(homeActivity.this)
+                                    .setTitle("Data")
+                                    .setMessage(myB.toString())
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Continue with delete operation
+                                        }
+                                    })
+
+                                    // A null listener allows the button to dismiss the dialog and take no further action.
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
 
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -132,20 +152,21 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
     public void onClick(View view) {
-        if(view == buttonSignIn){
+        if (view == buttonSignIn) {
             AddProduct();
         }
 
-        if(view == buttonShowProducts){
+        if (view == buttonShowProducts) {
             ShowProducts();
         }
 
-        if(view == buttonDeals){
+        if (view == buttonDeals) {
             startActivity(new Intent(getApplicationContext(), Deals.class));
         }
 
-        if(view == buttonMaps){
+        if (view == buttonMaps) {
             startActivity(new Intent(getApplicationContext(), MapsActivity.class));
         }
     }

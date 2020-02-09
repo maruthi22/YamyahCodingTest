@@ -18,9 +18,10 @@ import android.content.Intent;
 
 
 
-
+// Sign Up Code
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    //Declarations
     private EditText editTextEmail;
     private EditText editTextPassword;
     private Button buttonSignup;
@@ -45,13 +46,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(getApplicationContext(), homeActivity.class));
         }
 
-        //views
+        //Assignments of addresses (references)
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         buttonSignup = (Button) findViewById(R.id.buttonSignup);
         productadd = (Button) findViewById(R.id.productadd);
         progressDialog = new ProgressDialog(this);
 
+        //Setting the click listerner
         buttonSignup.setOnClickListener(this);
         productadd.setOnClickListener(this);
     }
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
     }
+
+    //When Button is clicked
     @Override
     public void onClick(View view) {
         if(view == buttonSignup){
