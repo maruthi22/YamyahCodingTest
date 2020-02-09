@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,35 +13,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.google.android.datatransport.Event;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class homeActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button buttonSignIn;
+
+    //Declarations
+    private Button addProduct;
     private Button buttonShowProducts;
     private Button buttonDeals;
     private Button buttonMaps;
+    private Button logout;
     private EditText editTextPassword;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -59,15 +52,22 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
             finish();
             startActivity(new Intent(getApplicationContext(), homeActivity.class));
         }*/
+
+        //Assigning address (reference)
         db = FirebaseFirestore.getInstance();
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        buttonSignIn = (Button) findViewById(R.id.buttonSignin);
+        addProduct = (Button) findViewById(R.id.buttonSignin);
+        logout = (Button) findViewById(R.id.logoutbutton);
         buttonShowProducts = (Button) findViewById(R.id.buttonShowProducts);
         buttonDeals = (Button) findViewById(R.id.buttonDeals);
         buttonMaps = (Button) findViewById(R.id.buttonMaps);
+
+        //Setting Click Listener
+        buttonMaps.setOnClickListener(this);
         buttonShowProducts.setOnClickListener(this);
         buttonDeals.setOnClickListener(this);
-        buttonSignIn.setOnClickListener(this);
+        addProduct.setOnClickListener(this);
+        logout.setOnClickListener(this);
 
     }
 
@@ -95,24 +95,6 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
     public void ShowProducts() {
 
-//        DocumentReference docRef = db.collection("Products").document('weQNS0BmyqoUwpVfji9r');
-//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    if (document.exists()) {
-//                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-//                    } else {
-//                        Log.d(TAG, "No such document");
-//                    }
-//                } else {
-//                    Log.d(TAG, "get failed with ", task.getException());
-//                }
-//            }
-//        });
-
-
         db.collection("Products")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -139,6 +121,7 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            Toast.makeText(homeActivity.this, "Error Getting Documents", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -146,8 +129,9 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //When a button is pressed this method is called
     public void onClick(View view) {
-        if (view == buttonSignIn) {
+        if (view == addProduct) {
             AddProduct();
         }
 
@@ -161,6 +145,12 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view == buttonMaps) {
             startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+        }
+
+        if (view == logout){
+            firebaseAuth.signOut();
+            finish();
+            startActivity(new Intent(this, Login.class));
         }
     }
 }

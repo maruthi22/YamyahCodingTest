@@ -56,6 +56,11 @@
             android:layout_margin="15dp"
             android:text="Maps" />
 
+        <Button
+            android:id="@+id/logoutbutton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout" />
 
 
     </LinearLayout>
